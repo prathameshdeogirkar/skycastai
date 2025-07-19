@@ -7,16 +7,21 @@ import axios from "axios";
 
 const apiKey = import.meta.env.VITE_WEATHER_API;
 
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+
 
 const App = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openaidatapopup, setopenaidatapopup] = useState(false);
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); 
+  const [searchdata,setsearchdata]=useState("")
+  const [currentLoctionWeather, setCurrentLocationWeather] = useState([]);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
   const [aiText, setAiText] = useState("");
+
 
   // variable for prompt
 
@@ -48,7 +53,7 @@ Respond ONLY with valid JSON and no extra text.
         `https://api.openweathermap.org/data/2.5/weather?q=Nagpur&appid=${apiKey}&units=metric`
       );
       setData(response.data);
-      console.log("🌦️ Default Weather:", response.data);
+      // console.log("Default Weather:", response.data
     } catch (error) {
       console.log("Weather Error:", error);
     }
@@ -57,19 +62,19 @@ Respond ONLY with valid JSON and no extra text.
 
  const aiResponse = async () => {
   try {
-    const response = await axios.post(`http://localhost:3000/chat`, {
+  const response = await axios.post(`${VITE_API_URL}/chat`, {
       prompt: aiPrompt,
     });
 
     const rawJSONString = response.data.plan;
 
     if (!rawJSONString) {
-      console.error("❌ 'plan' property not found in the response.");
+      console.error("property not found in the response.");
       return;
     }
 
     const parsedData = JSON.parse(rawJSONString);
-    console.log( parsedData);
+    // console.log( parsedData);
     setAiText(parsedData);
 
   } catch (error) {
@@ -85,10 +90,10 @@ Respond ONLY with valid JSON and no extra text.
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          // console.log("📍 Location Set:", position.coords);
+          // console.log("Location Set:", position.coords);
         },
         (error) => {
-          console.error("❌ Location Error:", error);
+          console.error("Location Error:", error);
           setOpenPopup(true);
         }
       );
@@ -103,12 +108,30 @@ Respond ONLY with valid JSON and no extra text.
       const res = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`
       );
-      setData(res.data);
-      // console.log("📍 Current Location Weather:", res.data);
+      setCurrentLocationWeather(res.data);
+      // console.log("Current Location Weather:", res.data);
     } catch (err) {
-      console.error("❌ Weather Fetch Error:", err);
+      console.error("Weather Fetch Error:", err);
     }
   };
+
+
+
+
+  const handleCityChange = async (city) => {
+  if (!city) return;
+  try {
+    const res = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+    );
+   setsearchdata(res.data);
+    console.log("Searched City Weather:", res.data);
+  } catch (err) {
+    console.error("❌ City Not Found:", err);
+    alert("City not found, please try again!");
+  }
+};
+
 
 
 
@@ -122,6 +145,7 @@ Respond ONLY with valid JSON and no extra text.
     getUserLocation();
     getDefaultWeather();
     aiResponse();
+    handleCityChange()
   }, []);
 
 
@@ -135,17 +159,17 @@ Respond ONLY with valid JSON and no extra text.
 
   return (
     <>
-      <Navbar />
+      <Navbar onSearch={handleCityChange}/>
 
 
       {openPopup && <Errorpopup />}
 
       <div className="h-screen w-screen flex justify-center items-center flex-col relative">
         <div className="flex items-center justify-center gap-6 flex-col absolute top-50 z-10 px-4">
-          <p className="text-white text-6xl sm:text-9xl font-bold">
+          <p className="text-white text-6xl  sm:text-9xl font-bold">
             Skycast.<span className="text-blue-400">AI</span>
           </p>
-          <p className="text-blue-200 mt-4 text-3xl">Weather Application</p>
+          <p className="text-blue-200 mt-4 text-3xl ">Weather Application</p>
           <p className="text-white text-2xl text-center">
             Stay ahead of the weather — get real-time updates with AI ☁️
           </p>
@@ -164,17 +188,30 @@ Respond ONLY with valid JSON and no extra text.
         </div>
 
         <p className='text-white z-10 absolute bottom-40 text-6xl'>
-          {data?.main?.temp}<span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
+          {
+              searchdata ? (
+                <span>{searchdata?.main?.temp}</span>
+              ):<span>{currentLoctionWeather?.main?.temp}</span>
+          }
+            <span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
         </p>
 
-        <div className="text-white z-12 absolute bottom-28 text-sm flex justify-between items-center w-30  px-4 py-2 rounded">
+        <div className="text-white z-12 absolute bottom-28 text-sm flex justify-between items-center w-30  px-4 py-2 rounded gap-6">
           <div className="flex items-center gap-1">
             <span className="text-blue-400 text-2xl">↑</span>
-            <span>20°C</span>
+            {
+              searchdata ? (
+                <span>{searchdata?.main?.temp_max}</span>
+              ):<span>{currentLoctionWeather?.main?.temp}</span>
+          }
           </div>
           <div className="flex items-center gap-1">
             <span className="text-blue-400 text-2xl">↓</span>
-            <span>12°C</span>
+            {
+              searchdata ? (
+                <span>{searchdata?.main?.temp_min}</span>
+              ):<span>{currentLoctionWeather?.main?.temp}</span>
+          }
           </div>
         </div>
 
