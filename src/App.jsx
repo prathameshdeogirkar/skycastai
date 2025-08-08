@@ -14,8 +14,8 @@ const App = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openaidatapopup, setopenaidatapopup] = useState(false);
 
-  const [data, setData] = useState([]); 
-  const [searchdata,setsearchdata]=useState("")
+  const [data, setData] = useState([]);
+  const [searchdata, setsearchdata] = useState("")
   const [currentLoctionWeather, setCurrentLocationWeather] = useState([]);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -60,27 +60,27 @@ Respond ONLY with valid JSON and no extra text.
   };
 
 
- const aiResponse = async () => {
-  try {
-  const response = await axios.post(`${VITE_API_URL}/chat`, {
-      prompt: aiPrompt,
-    });
+  const aiResponse = async () => {
+    try {
+      const response = await axios.post(`${VITE_API_URL}/chat`, {
+        prompt: aiPrompt,
+      });
 
-    const rawJSONString = response.data.plan;
+      const rawJSONString = response.data.plan;
 
-    if (!rawJSONString) {
-      console.error("property not found in the response.");
-      return;
+      if (!rawJSONString) {
+        console.error("property not found in the response.");
+        return;
+      }
+
+      const parsedData = JSON.parse(rawJSONString);
+      // console.log( parsedData);
+      setAiText(parsedData);
+
+    } catch (error) {
+      console.error("❌ Parsing or request error:", error);
     }
-
-    const parsedData = JSON.parse(rawJSONString);
-    // console.log( parsedData);
-    setAiText(parsedData);
-
-  } catch (error) {
-    console.error("❌ Parsing or request error:", error);
-  }
-};
+  };
 
 
 
@@ -119,18 +119,18 @@ Respond ONLY with valid JSON and no extra text.
 
 
   const handleCityChange = async (city) => {
-  if (!city) return;
-  try {
-    const res = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-    );
-   setsearchdata(res.data);
-    console.log("Searched City Weather:", res.data);
-  } catch (err) {
-    console.error("❌ City Not Found:", err);
-    alert("City not found, please try again!");
-  }
-};
+    if (!city) return;
+    try {
+      const res = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+      );
+      setsearchdata(res.data);
+      console.log("Searched City Weather:", res.data);
+    } catch (err) {
+      console.error("❌ City Not Found:", err);
+      alert("City not found, please try again!");
+    }
+  };
 
 
 
@@ -159,67 +159,75 @@ Respond ONLY with valid JSON and no extra text.
 
   return (
     <>
-      <Navbar onSearch={handleCityChange}/>
+      <Navbar onSearch={handleCityChange} />
 
 
-      {openPopup && <Errorpopup />}
+      {openPopup && <Errorpopup setopenPopup={setOpenPopup} />}
 
-      <div className="h-screen w-screen flex justify-center items-center flex-col relative">
-        <div className="flex items-center justify-center gap-6 flex-col absolute top-50 z-10 px-4">
-          <p className="text-white text-6xl  sm:text-9xl font-bold">
+
+      <div className="h-screen w-screen flex flex-col justify-center items-center relative px-4">
+        <div className="flex flex-col items-center gap-4 absolute top-[20%] z-10 text-center px-4">
+          <p className="text-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold ">
             Skycast.<span className="text-blue-400">AI</span>
           </p>
-          <p className="text-blue-200 mt-4 text-3xl ">Weather Application</p>
-          <p className="text-white text-2xl text-center">
+          <p className="text-blue-200 mt-2 text-2xl sm:text-2xl md:text-3xl">
+            Weather Application
+          </p>
+          <p className="text-white text-md  sm:text-2xl md:text-2xl ">
             Stay ahead of the weather — get real-time updates with AI ☁️
           </p>
         </div>
 
-
-        <div className="absolute z-0 w-screen h-screen bg-black">
+        <div className="absolute z-0 w-full h-full bg-black">
           <video
             src={bgVideo}
             autoPlay
             muted
             loop
-            className="relative w-full h-full object-cover"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute top-0 h-screen w-screen bg-black opacity-60"></div>
+          <div className="absolute top-0 h-full w-full bg-black opacity-60"></div>
         </div>
 
-        <p className='text-white z-10 absolute bottom-40 text-6xl'>
+        <p className='text-white z-10 absolute bottom-40 text-5xl sm:text-5xl md:text-6xl lg:text-6xl '>
           {
-              searchdata ? (
-                <span>{searchdata?.main?.temp}</span>
-              ):<span>{currentLoctionWeather?.main?.temp}</span>
+            searchdata ? (
+              <span>{searchdata?.main?.temp}</span>
+            ) : <span>{currentLoctionWeather?.main?.temp}</span>
           }
-            <span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
+          <span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
         </p>
+        <div className="text-white z-12 absolute bottom-30 sm:bottom-30 md:bottom-30 
+                text-xs sm:text-md  flex justify-between items-center gap-4 sm:gap-6 ">
 
-        <div className="text-white z-12 absolute bottom-28 text-sm flex justify-between items-center w-30  px-4 py-2 rounded gap-6">
           <div className="flex items-center gap-1">
-            <span className="text-blue-400 text-2xl">↑</span>
-            {
-              searchdata ? (
-                <span>{searchdata?.main?.temp_max}</span>
-              ):<span>{currentLoctionWeather?.main?.temp}</span>
-          }
+            <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↑</span>
+            {searchdata ? (
+              <span>{searchdata?.main?.temp_max}</span>
+            ) : (
+              <span>{currentLoctionWeather?.main?.temp}</span>
+            )}
           </div>
+
           <div className="flex items-center gap-1">
-            <span className="text-blue-400 text-2xl">↓</span>
-            {
-              searchdata ? (
-                <span>{searchdata?.main?.temp_min}</span>
-              ):<span>{currentLoctionWeather?.main?.temp}</span>
-          }
+            <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↓</span>
+            {searchdata ? (
+              <span>{searchdata?.main?.temp_min}</span>
+            ) : (
+              <span>{currentLoctionWeather?.main?.temp}</span>
+            )}
           </div>
         </div>
 
-        <button className="text-white z-13 absolute bottom-10 text-md bg-blue-400 h-10 w-40 rounded cursor-pointer" onClick={() => setopenaidatapopup(true)}>
+
+        <button className="text-white absolute  bg-blue-400 hover:bg-blue-500 bottom-6 sm:bottom-8 md:bottom-10 text-sm sm:text-sm md:text-lg  h-9 sm:h-10 md:h-12 w-32 sm:w-36 md:w-40 rounded cursor-pointer"
+          onClick={() => setopenaidatapopup(true)}
+        >
           Get More Info ℹ️
         </button>
 
-        {openaidatapopup && <Showaidata setopenPopup={setopenaidatapopup} aiData={aiText}  />}
+
+        {openaidatapopup && <Showaidata setopenPopup={setopenaidatapopup} aiData={aiText} />}
       </div>
     </>
   );
