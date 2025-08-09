@@ -14,7 +14,7 @@ function Navbar({ onSearch }) {
 
   return (
     <>
-      <div className='backdrop-blur-2xl w-full h-16 fixed top-0 flex items-center justify-between px-8 shadow-md z-10'>
+      <div className='backdrop-blur-2xl w-full h-16 fixed top-0 flex items-center justify-between px-3 shadow-md z-10  sm:px-8 md:px-10 lg:px-8'>
 
         <div className='text-3xl font-extrabold text-white'>
           Skycast.<span className='text-sky-400'>AI</span>
@@ -24,7 +24,7 @@ function Navbar({ onSearch }) {
           <form onSubmit={handlesearch}>
             <input
               className="text-black bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 rounded-md h-9 
-             w-30 sm:w-45 text-[10px] md:w-60 lg:w-70 px-4 text-sm transition-all duration-300"
+             w-30 sm:w-45 text-[12px] md:w-60 lg:w-70 px-4 text-md transition-all duration-300"
               type="text"
               placeholder="Search Mood Of Your City"
               value={city}

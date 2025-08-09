@@ -189,42 +189,45 @@ Respond ONLY with valid JSON and no extra text.
           <div className="absolute top-0 h-full w-full bg-black opacity-60"></div>
         </div>
 
-        <p className='text-white z-10 absolute bottom-40 text-5xl sm:text-5xl md:text-6xl lg:text-6xl '>
-          {
-            searchdata ? (
-              <span>{searchdata?.main?.temp}</span>
-            ) : <span>{currentLoctionWeather?.main?.temp}</span>
-          }
-          <span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
-        </p>
-        <div className="text-white z-12 absolute bottom-30 sm:bottom-30 md:bottom-30 
+        <div className="absolute bottom-2 sm:bottom-16 md:bottom-20 flex flex-col justify-center items-center">
+          <p className="text-white z-10 absolute bottom-70 sm:bottom-40 text-5xl sm:text-5xl md:text-6xl lg:text-6xl">
+
+            {
+              searchdata ? (
+                <span>{searchdata?.main?.temp}</span>
+              ) : <span>{currentLoctionWeather?.main?.temp}</span>
+            }
+            <span className='relative'><sup className='text-[0.5em] absolute top-2'>°C</sup></span>
+          </p>
+          <div className="text-white z-12 absolute bottom-60 sm:bottom-30 md:bottom-30 
                 text-xs sm:text-md  flex justify-between items-center gap-4 sm:gap-6 ">
 
-          <div className="flex items-center gap-1">
-            <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↑</span>
-            {searchdata ? (
-              <span>{searchdata?.main?.temp_max}</span>
-            ) : (
-              <span>{currentLoctionWeather?.main?.temp}</span>
-            )}
+            <div className="flex items-center gap-1">
+              <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↑</span>
+              {searchdata ? (
+                <span>{searchdata?.main?.temp_max}</span>
+              ) : (
+                <span>{currentLoctionWeather?.main?.temp}</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↓</span>
+              {searchdata ? (
+                <span>{searchdata?.main?.temp_min}</span>
+              ) : (
+                <span>{currentLoctionWeather?.main?.temp}</span>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1">
-            <span className="text-blue-400 text-lg sm:text-xl md:text-2xl">↓</span>
-            {searchdata ? (
-              <span>{searchdata?.main?.temp_min}</span>
-            ) : (
-              <span>{currentLoctionWeather?.main?.temp}</span>
-            )}
-          </div>
+
+          <button className="text-white absolute  bg-blue-400 hover:bg-blue-500 bottom-40 sm:bottom-8 md:bottom-10 text-sm sm:text-sm md:text-lg  h-9 sm:h-10 md:h-12 w-32 sm:w-36 md:w-40 rounded cursor-pointer"
+            onClick={() => setopenaidatapopup(true)}
+          >
+            Get More Info ℹ️
+          </button>
         </div>
-
-
-        <button className="text-white absolute  bg-blue-400 hover:bg-blue-500 bottom-6 sm:bottom-8 md:bottom-10 text-sm sm:text-sm md:text-lg  h-9 sm:h-10 md:h-12 w-32 sm:w-36 md:w-40 rounded cursor-pointer"
-          onClick={() => setopenaidatapopup(true)}
-        >
-          Get More Info ℹ️
-        </button>
 
 
         {openaidatapopup && <Showaidata setopenPopup={setopenaidatapopup} aiData={aiText} />}
